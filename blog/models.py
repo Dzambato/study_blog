@@ -15,17 +15,17 @@ from django.utils.timezone import now
 logger = logging.getLogger(__name__)
 
 LINK_SHOW_TYPE = (
-    ('i', '首页'),
-    ('l', '列表页'),
-    ('p', '文章页面'),
-    ('a', '全站'),
+    ('i', 'Домашняя'),
+    ('l', 'страница списка'),
+    ('p', 'страница статьи'),
+    ('a', 'все станции'),
 )
 
 
 class BaseModel(models.Model):
     id = models.AutoField(primary_key=True)
-    created_time = models.DateTimeField('创建时间', default=now)
-    last_mod_time = models.DateTimeField('修改时间', default=now)
+    created_time = models.DateTimeField("Время создания", default=now)
+    last_mod_time = models.DateTimeField('Время изменения', default=now)
 
     def save(self, *args, **kwargs):
 
@@ -53,37 +53,37 @@ class BaseModel(models.Model):
 
 
 class Article(BaseModel):
-    """文章"""
+    """Статья"""
     STATUS_CHOICES = (
-        ('d', '草稿'),
-        ('p', '发表'),
+        ('d','черновик'),
+        ('p', 'опубликовано'),
     )
     COMMENT_STATUS = (
-        ('o', '打开'),
-        ('c', '关闭'),
+        ('o', 'Open'),
+        ('c', 'off'),
     )
     TYPE = (
-        ('a', '文章'),
-        ('p', '页面'),
+        ('a','статья'),
+        ('p', 'страница'),
     )
-    title = models.CharField('标题', max_length=200, unique=True)
-    body = models.TextField('正文')
-    pub_time = models.DateTimeField('发布时间', blank=True, null=True)
-    status = models.CharField('文章状态', max_length=1, choices=STATUS_CHOICES, default='p')
-    comment_status = models.CharField('评论状态', max_length=1, choices=COMMENT_STATUS, default='o')
-    type = models.CharField('类型', max_length=1, choices=TYPE, default='a')
-    views = models.PositiveIntegerField('浏览量', default=0)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='作者', on_delete=models.CASCADE)
-    article_order = models.IntegerField('排序,数字越大越靠前', blank=False, null=False, default=0)
-    category = models.ForeignKey('Category', verbose_name='分类', on_delete=models.CASCADE, blank=False, null=False)
-    tags = models.ManyToManyField('Tag', verbose_name='标签集合', blank=True)
+    title = models.CharField('Название', max_length=200, unique=True)
+    body = models.TextField('Тело')
+    pub_time = models.DateTimeField('Время публикации', blank=True, null=True)
+    status = models.CharField('Статус статьи', max_length=1, choices=STATUS_CHOICES, default='p')
+    comment_status = models.CharField('Статус комментариев', max_length=1, choices=COMMENT_STATUS, default='o')
+    type = models.CharField('Тип', max_length=1, choices=TYPE, default='a')
+    views = models.PositiveIntegerField('Количество просмотров', default=0)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Автор', on_delete=models.CASCADE)
+    article_order = models.IntegerField('Сортировка, чем больше число, тем больше вперед', blank=False, null=False, default=0)
+    category = models.ForeignKey('Category', verbose_name='Классификация', on_delete=models.CASCADE, blank=False, null=False)
+    tags = models.ManyToManyField('Tag', verbose_name='Коллекция тегов', blank=True)
 
     def __str__(self):
         return self.title
 
     class Meta:
         ordering = ['-article_order', '-pub_time']
-        verbose_name = "文章"
+        verbose_name = "Статьи"
         verbose_name_plural = verbose_name
         get_latest_by = 'id'
 
@@ -138,13 +138,13 @@ class Article(BaseModel):
 
 class Category(BaseModel):
     """文章分类"""
-    name = models.CharField('分类名', max_length=30, unique=True)
-    parent_category = models.ForeignKey('self', verbose_name="父级分类", blank=True, null=True, on_delete=models.CASCADE)
+    name = models.CharField('Название категории', max_length=30, unique=True)
+    parent_category = models.ForeignKey('self', verbose_name="Родительская классификация", blank=True, null=True, on_delete=models.CASCADE)
     slug = models.SlugField(default='no-slug', max_length=60, blank=True)
 
     class Meta:
         ordering = ['name']
-        verbose_name = "分类"
+        verbose_name = "Классификация"
         verbose_name_plural = verbose_name
 
     def get_absolute_url(self):
@@ -193,7 +193,7 @@ class Category(BaseModel):
 
 class Tag(BaseModel):
     """文章标签"""
-    name = models.CharField('标签名', max_length=30, unique=True)
+    name = models.CharField('Имя тега', max_length=30, unique=True)
     slug = models.SlugField(default='no-slug', max_length=60, blank=True)
 
     def __str__(self):
@@ -208,24 +208,24 @@ class Tag(BaseModel):
 
     class Meta:
         ordering = ['name']
-        verbose_name = "标签"
+        verbose_name = "Ярлык"
         verbose_name_plural = verbose_name
 
 
 class Links(models.Model):
     """友情链接"""
 
-    name = models.CharField('链接名称', max_length=30, unique=True)
-    link = models.URLField('链接地址')
-    sequence = models.IntegerField('排序', unique=True)
-    is_enable = models.BooleanField('是否显示', default=True, blank=False, null=False)
-    show_type = models.CharField('显示类型', max_length=1, choices=LINK_SHOW_TYPE, default='i')
-    created_time = models.DateTimeField('创建时间', default=now)
-    last_mod_time = models.DateTimeField('修改时间', default=now)
+    name = models.CharField('имя ссылки', max_length=30, unique=True)
+    link = models.URLField('адрес ссылки')
+    sequence = models.IntegerField('Сортировка', unique=True)
+    is_enable = models.BooleanField('Отображается ли', default=True, blank=False, null=False)
+    show_type = models.CharField('тип дисплея', max_length=1, choices=LINK_SHOW_TYPE, default='i')
+    created_time = models.DateTimeField('Время создания', default=now)
+    last_mod_time = models.DateTimeField('Время изменения', default=now)
 
     class Meta:
         ordering = ['sequence']
-        verbose_name = '友情链接'
+        verbose_name = 'Ссылки'
         verbose_name_plural = verbose_name
 
     def __str__(self):
@@ -234,16 +234,16 @@ class Links(models.Model):
 
 class SideBar(models.Model):
     """侧边栏,可以展示一些html内容"""
-    name = models.CharField('标题', max_length=100)
-    content = models.TextField("内容")
-    sequence = models.IntegerField('排序', unique=True)
-    is_enable = models.BooleanField('是否启用', default=True)
-    created_time = models.DateTimeField('创建时间', default=now)
-    last_mod_time = models.DateTimeField('修改时间', default=now)
+    name = models.CharField('Имя', max_length=100)
+    content = models.TextField("Содержание")
+    sequence = models.IntegerField('Сортировка', unique=True)
+    is_enable = models.BooleanField('Включен ли', default=True)
+    created_time = models.DateTimeField('Время создания', default=now)
+    last_mod_time = models.DateTimeField('Время модификации', default=now)
 
     class Meta:
         ordering = ['sequence']
-        verbose_name = '侧边栏'
+        verbose_name = 'Боковая панель'
         verbose_name_plural = verbose_name
 
     def __str__(self):
@@ -252,24 +252,24 @@ class SideBar(models.Model):
 
 class BlogSettings(models.Model):
     '''站点设置 '''
-    sitename = models.CharField("网站名称", max_length=200, null=False, blank=False, default='')
-    site_description = models.TextField("网站描述", max_length=1000, null=False, blank=False, default='')
-    site_seo_description = models.TextField("网站SEO描述", max_length=1000, null=False, blank=False, default='')
-    site_keywords = models.TextField("网站关键字", max_length=1000, null=False, blank=False, default='')
-    article_sub_length = models.IntegerField("文章摘要长度", default=300)
-    sidebar_article_count = models.IntegerField("侧边栏文章数目", default=10)
-    sidebar_comment_count = models.IntegerField("侧边栏评论数目", default=5)
-    show_google_adsense = models.BooleanField('是否显示谷歌广告', default=False)
-    google_adsense_codes = models.TextField('广告内容', max_length=2000, null=True, blank=True, default='')
-    open_site_comment = models.BooleanField('是否打开网站评论功能', default=True)
-    beiancode = models.CharField('备案号', max_length=2000, null=True, blank=True, default='')
-    analyticscode = models.TextField("网站统计代码", max_length=1000, null=False, blank=False, default='')
-    show_gongan_code = models.BooleanField('是否显示公安备案号', default=False, null=False)
-    gongan_beiancode = models.TextField('公安备案号', max_length=2000, null=True, blank=True, default='')
-    resource_path = models.CharField("静态文件保存地址", max_length=300, null=False, default='/var/www/resource/')
+    sitename = models.CharField("Название сайта", max_length=200, null=False, blank=False, default='')
+    site_description = models.TextField("Описание сайта", max_length=1000, null=False, blank=False, default='')
+    site_seo_description = models.TextField("SEO описание сайта", max_length=1000, null=False, blank=False, default='')
+    site_keywords = models.TextField("Ключевые слова сайта", max_length=1000, null=False, blank=False, default='')
+    article_sub_length = models.IntegerField("Длина тезисов статей", default=300)
+    sidebar_article_count = models.IntegerField("Количество статей на боковой панели", default=10)
+    sidebar_comment_count = models.IntegerField("Количество комментариев на боковой панели", default=5)
+    show_google_adsense = models.BooleanField('Показывать ли объявления Google', default=False)
+    google_adsense_codes = models.TextField('Содержание рекламы', max_length=2000, null=True, blank=True, default='')
+    open_site_comment = models.BooleanField('Включить функцию обзора веб-сайта', default=True)
+    beiancode = models.CharField('Номер записи', max_length=2000, null=True, blank=True, default='')
+    analyticscode = models.TextField("Код статистики сайта", max_length=1000, null=False, blank=False, default='')
+    show_gongan_code = models.BooleanField('Показывает ли номер записи общественной безопасности', default=False, null=False)
+    gongan_beiancode = models.TextField('Номер записи общественной безопасности', max_length=2000, null=True, blank=True, default='')
+    resource_path = models.CharField("Статический адрес сохранения файла", max_length=300, null=False, default='/var/www/resource/')
 
     class Meta:
-        verbose_name = '网站配置'
+        verbose_name = 'Конфигурация сайта'
         verbose_name_plural = verbose_name
 
     def __str__(self):
@@ -277,7 +277,7 @@ class BlogSettings(models.Model):
 
     def clean(self):
         if BlogSettings.objects.exclude(id=self.id).count():
-            raise ValidationError(_('只能有一个配置'))
+            raise ValidationError(_('Может быть только одна конфигурация'))
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
