@@ -246,3 +246,7 @@ def delete_view_cache(username):
     for k in keys:
         logger.info('delete sidebar key:' + k)
         cache.delete(k)
+
+
+def get_filename(filename):
+    return filename.upper()

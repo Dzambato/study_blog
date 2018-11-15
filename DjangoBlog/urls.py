@@ -37,6 +37,7 @@ handler500 = 'blog.views.server_error_view'
 handle403 = 'blog.views.permission_denied_view'
 urlpatterns = [
                   url(r'^admin/', admin_site.urls),
+                url(r'^ckeditor/', include('ckeditor_uploader.urls')),
                   url(r'', include('blog.urls', namespace='blog')),
 
                   url(r'', include('comments.urls', namespace='comment')),
@@ -48,4 +49,4 @@ urlpatterns = [
                   url(r'^search', include('haystack.urls'), name='search'),
                   url(r'', include('servermanager.urls', namespace='servermanager')),
                   url(r'', include('owntracks.urls', namespace='owntracks'))
-              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+              ] + static(settings.STATIC_URL,document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

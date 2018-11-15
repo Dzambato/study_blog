@@ -5,6 +5,7 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 from uuslug import slugify
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.contrib.sites.models import Site
@@ -67,7 +68,7 @@ class Article(BaseModel):
         ('p', 'страница'),
     )
     title = models.CharField('Название', max_length=200, unique=True)
-    body = models.TextField('Тело')
+    body = RichTextUploadingField()
     pub_time = models.DateTimeField('Время публикации', blank=True, null=True)
     status = models.CharField('Статус статьи', max_length=1, choices=STATUS_CHOICES, default='p')
     comment_status = models.CharField('Статус комментариев', max_length=1, choices=COMMENT_STATUS, default='o')
